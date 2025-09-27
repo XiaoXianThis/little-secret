@@ -1,7 +1,7 @@
 use std::fs;
 use rayon::ThreadPoolBuilder;
 use crate::utils::encrypt::{decrypt_file, encrypt_file};
-
+use crate::utils::thumbnail::make_thumbnail;
 
 // 递归加密文件夹
 #[tauri::command]
@@ -21,11 +21,18 @@ pub fn encrypt_folder(path: &str, passwords: Vec<&str>) -> String {
                 let path = entry.path().to_string_lossy().to_string();
                 // 不处理文件夹和已加密的文件
                 if !entry.path().is_dir() && !path.ends_with(".cry") {
+                    // 缩略图
+                    make_thumbnail(&path);
+
+                    // 加密
                     let vec_passwords: Vec<String> = passwords.iter().map(|s| s.to_string()).collect();
                     encrypt_file(&path, &format!("{}.cry", path).to_string(), &vec_passwords, None).unwrap();
+
                     // 删除原文件
                     fs::remove_file(entry.path()).unwrap();
+
                 } else if entry.path().is_dir() {
+                    // 递归子文件夹
                     encrypt_folder(path.as_str(), passwords.clone());
                 }
                 // encrypt_file(entry.path()).unwrap()

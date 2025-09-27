@@ -52,6 +52,10 @@ export default function EncryptPage() {
     setDirFiles(result.filter(item => item.endsWith(".cry")))
   }
 
+  async function test() {
+    let result = await invoke("test", { name: "ok"})
+    alert(result)
+  }
 
   return (
     <Layout class="min-h-dvh flex flex-col gap-6 px-12" title="加密解密">
@@ -60,7 +64,7 @@ export default function EncryptPage() {
           <div class="font-bold mb-2">文件夹</div>
           <div className={`${path ? "" : "opacity-40"}`}>{path ? path : "选择要加密的文件/夹路径"}</div>
           <div class="text-sm mt-3 opacity-50">已加密 {dirFiles.length} 个文件</div>
-          <div onClick={() => !loading && select_path()}
+          <div onClick={() => !loading && test()}
                className={`px-6 absolute right-2 bottom-2 border-1 py-2.5 ${ !loading ? "bg-black" : "bg-black/50" } text-white rounded-2xl select-none hover:scale-105 active:scale-95 duration-150 cursor-pointer`}>选择
           </div>
           {loading && (
