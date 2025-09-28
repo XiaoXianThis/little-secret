@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import preact from "@preact/preset-vite";
 import tailwindcss from '@tailwindcss/vite'
 
+// @ts-ignore
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/

@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "@tanstack/react-virtual": "^3.13.12",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-opener": "^2",
     "preact": "^10.25.1",
-    "preact-router": "^4.1.2"
+    "preact-router": "^4.1.2",
+    "react-window": "^2.1.2"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.9.3",
