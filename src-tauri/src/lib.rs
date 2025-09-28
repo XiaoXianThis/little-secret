@@ -15,7 +15,7 @@ fn test() -> String {
     // println!("{:?}", result);
     // update_metadata("/Users/mac/Desktop/IMGS/1.jpg.cry", b"this is new metadata!!!!".to_vec());
     // print_header_info("/Users/mac/Desktop/IMGS/1.jpg.cry");
-    // make_thumbnail();
+
     format!("Hello! You've been greeted from Rust!")
 }
 
