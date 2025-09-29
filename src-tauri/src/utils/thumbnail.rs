@@ -25,11 +25,11 @@ pub fn make_thumbnail(path: &String) -> String {
     else {
         // 生成预览图
         let img = result.unwrap();
-        let resized = img.resize(100, 100, FilterType::Nearest);
-        let blurred = resized.blur(20.0);
-        // let lock = open("resources/lock.png").unwrap();
-        // overlay(&mut blurred, &lock, 0, 0);
-        // blurred.save(path).unwrap();
+        let resized = img.resize(150, 150, FilterType::Nearest);
+        let mut blurred = resized.blur(20.0);
+        let lock = open("resources/lock.png").unwrap();
+        overlay(&mut blurred, &lock, 0, 0);
+        blurred.save(path).unwrap();
         let mut buffer = Vec::new();
         let mut cursor = Cursor::new(&mut buffer);
         blurred.write_to(&mut cursor, ImageFormat::Jpeg).unwrap();

@@ -3,7 +3,7 @@ mod utils;
 use std::{fs};
 use crate::utils::encrypt::{decrypt_file, encrypt_file, reset_passwords};
 use crate::utils::cry_info::{print_header_info, update_metadata};
-use crate::utils::folder::{decrypt_folder, encrypt_folder, read_file_metadata, read_folder};
+use crate::utils::folder::{decrypt_file_temp, decrypt_folder, encrypt_folder, read_file_metadata, read_folder, read_img_base64};
 use crate::utils::thumbnail::{make_thumbnail};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -32,7 +32,8 @@ pub fn run() {
             decrypt_folder,         // 递归加密文件夹
             read_folder,            // 读取文件夹中的全部文件
             read_file_metadata,     // 读取文件元数据
-
+            decrypt_file_temp,      // 解密文件到临时文件
+            read_img_base64,        // 将图片解码为base64（注意是图片而不是加密文件）
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

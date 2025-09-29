@@ -1,9 +1,14 @@
 use std::fs;
 use std::fs::metadata;
+use std::io::Cursor;
 use std::path::Path;
-use image::imageops::thumbnail;
+use base64::Engine;
+use base64::engine::general_purpose;
+use image::imageops::{thumbnail, FilterType};
+use image::{open, ImageFormat};
 use rayon::ThreadPoolBuilder;
 use serde::{Deserialize, Serialize};
+use tempfile::NamedTempFile;
 use crate::utils::cry_info::parse_header;
 use crate::utils::encrypt::{decrypt_file, encrypt_file};
 use crate::utils::thumbnail::make_thumbnail;
@@ -147,3 +152,42 @@ pub fn read_file_metadata(path: &str) -> String {
     }
     return "{}".to_string();
 }
+
+// 解密文件作为临时文件，返回路径
+#[tauri::command]
+pub fn decrypt_file_temp(path: &str, password: &str) -> String {
+    let result = NamedTempFile::new();
+    if result.is_err() { return "".to_string() }
+    let temp_file = result.unwrap();
+    let temp_path = temp_file.path().to_str().unwrap();
+    let result = decrypt_file(
+        &path,
+        temp_path,
+        password
+    );
+    if result.is_err() { return "".to_string() }
+    return temp_path.to_string();
+}
+
+// 读取图片作为base64
+#[tauri::command]
+pub fn read_img_base64(path: &str) -> String {
+    // 尝试作为图片打开
+    let result = open(path);
+    let mut buffer: &[u8];
+    // 不是图片，返回空
+    if result.is_err() {
+        "".to_string()
+    }
+    // 是图片，返回base64
+    else {
+        // 生成预览图
+        let img = result.unwrap();
+        let mut buffer = Vec::new();
+        let mut cursor = Cursor::new(&mut buffer);
+        img.write_to(&mut cursor, ImageFormat::Jpeg).unwrap();
+        // 转为base64
+        return general_purpose::STANDARD.encode(buffer);
+    }
+}
+

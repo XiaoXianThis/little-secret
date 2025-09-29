@@ -16,6 +16,8 @@ export default function () {
   const [folderPath, setFolderPath] = useState("");
   // 文件夹中所有文件
   const [folderFiles, setFolderFiles] = useState<FileItem[]>([])
+  // 选中的文件
+  const [activeItem, setActiveItem] = useState()
 
   // 详情大图
   const [previewSrc, setPreviewSrc] = useState("")
@@ -39,16 +41,21 @@ export default function () {
   async function readFolder(path:string) {
     let folderFiles = await invoke("read_folder", { path }) as string;
     let files = JSON.parse(folderFiles) as FileItem[];
-    setFolderFiles(files.filter( item => (item.path.endsWith(".cry"))));
+    setFolderFiles(files.filter( item => item.path.endsWith(".cry") && !item.path.includes(".DS_Store") ));
   }
 
+  // 虚拟滚动加载
   const parentRef = useRef<HTMLDivElement>(null)
-
   const virtualizer = useVirtualizer({
     count: folderFiles.length,
     getScrollElement: () => parentRef.current, // 滚动容器
     estimateSize: () => 110
   })
+
+  // 解密文件到临时文件
+  function decrypt_file_temp(path: string) {
+
+  }
 
   return (
     <div class="w-dvw h-dvh overflow-hidden flex flex-row">
@@ -126,7 +133,7 @@ function RowComp({item, onClick}: { item: FileItem, onClick:(metadata:MetaData)=
 
   return (
     metadata?.thumbnail && (
-      <div onClick={() => onClick(metadata)} className="relative w-[150px] max-w-[150px] h-[100px] max-h-[100px] rounded-2xl overflow-hidden cursor-pointer group">
+      <div onClick={() => onClick(metadata)} className="relative w-[150px] max-w-[150px] max-h-[100px] rounded-2xl overflow-hidden cursor-pointer group">
         <img src={`data:image/*;base64,${metadata.thumbnail}`}
              className="w-full h-full object-contain bg-zinc-100 rounded-2xl"/>
         <div className="absolute">查看</div>
