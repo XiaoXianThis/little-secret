@@ -1,13 +1,14 @@
 use std::fs;
-use std::fs::metadata;
-use std::io::Cursor;
+use std::fs::{metadata, File};
+use std::io::{BufReader, Cursor};
 use std::path::Path;
 use base64::Engine;
 use base64::engine::general_purpose;
 use image::imageops::{thumbnail, FilterType};
-use image::{open, ImageFormat};
+use image::{open, ImageFormat, ImageReader};
 use rayon::ThreadPoolBuilder;
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
 use tempfile::NamedTempFile;
 use crate::utils::cry_info::parse_header;
 use crate::utils::encrypt::{decrypt_file, encrypt_file};
@@ -156,25 +157,34 @@ pub fn read_file_metadata(path: &str) -> String {
 // 解密文件作为临时文件，返回路径
 #[tauri::command]
 pub fn decrypt_file_temp(path: &str, password: &str) -> String {
-    let result = NamedTempFile::new();
-    if result.is_err() { return "".to_string() }
-    let temp_file = result.unwrap();
-    let temp_path = temp_file.path().to_str().unwrap();
+    let _path = Path::new(&path);
+    let parent = _path.parent().unwrap();
+    let parent_path = parent.to_string_lossy().to_string();
+    let temp_file_path = format!("{}/__temp_file__", &parent_path);
+    println!("{}, {}, {}",&path, temp_file_path, password);
     let result = decrypt_file(
         &path,
-        temp_path,
+        temp_file_path.as_str(),
         password
     );
+    // 解密成功
+    if result.is_ok() {
+        println!("解密成功！");
+    }
+    else {
+        println!("解密失败！");
+    }
     if result.is_err() { return "".to_string() }
-    return temp_path.to_string();
+    return temp_file_path.to_string();
 }
 
 // 读取图片作为base64
 #[tauri::command]
 pub fn read_img_base64(path: &str) -> String {
+    println!("尝试打开图片：{}", path);
     // 尝试作为图片打开
-    let result = open(path);
-    let mut buffer: &[u8];
+    let result = ImageReader::new(BufReader::new(File::open(path).unwrap())).with_guessed_format().unwrap().decode();
+
     // 不是图片，返回空
     if result.is_err() {
         "".to_string()

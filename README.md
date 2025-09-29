@@ -18,7 +18,7 @@ Rust、tauri、argon2、chacha20、React (Preact)、tailwindcss、Vite
 
 #### 我的需求是：
 
-- 1.每个文件独立加密，方便转移。
+- 1.以文件为单位加密，更灵活。
 - 2.可以通过密码直接打开文件，而不是先解密，用完再加密。
 - 3.我需要一张模糊的缩略图，来大致预览文件的内容。
 - 4.需要适合网络传输，例如网盘。
@@ -69,3 +69,7 @@ Rust、tauri、argon2、chacha20、React (Preact)、tailwindcss、Vite
 
 <br/>
 
+
+### 性能
+
+在配置为 12900K 的 Windows PC 上测试，release 编译的情况下，每分钟可加密 1200 张图片(每张约10MB)。数据仅供参考，实际性能取决于处理器规模和磁盘IO速度。
